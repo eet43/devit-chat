@@ -5,6 +5,10 @@ spring:
     username: devit
     password: 1234
 
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -22,6 +26,13 @@ spring:
   profiles:
     include: API-KEY
 
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: false
+    freemarker:
+      cache: false
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type: trace

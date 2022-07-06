@@ -1,6 +1,6 @@
 package com.devit.chat.service;
 
-import com.devit.chat.dto.ChatRoom;
+import com.devit.chat.entity.ChatRoom;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,17 +10,16 @@ import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageService {
+
+
     private final ObjectMapper objectMapper;
-    private Map<String, ChatRoom> chatRooms;
+    private Map<UUID, ChatRoom> chatRooms;
 
     @PostConstruct
     private void init() {
@@ -31,13 +30,21 @@ public class MessageService {
         return new ArrayList<>(chatRooms.values());
     }
 
-    public ChatRoom findById(String roomId) {
+    public ChatRoom findById(UUID roomId) {
+        for (ChatRoom value : chatRooms.values()) {
+            log.info("{}", value.getRoomId());
+        }
+        log.info("-----------------");
         return chatRooms.get(roomId);
     }
 
     public ChatRoom createRoom(String name) {
-        String roomId = name;
-        return ChatRoom.builder().roomId(roomId).build();
+        ChatRoom chatRoom = ChatRoom.builder()
+                .name(name)
+                .build();
+        chatRooms.put(chatRoom.getRoomId(), chatRoom);
+        log.info("채팅방이 생성되었습니다. : ", name);
+        return chatRoom;
     }
     public <T> void sendMessage(WebSocketSession session, T message) {
         try {
@@ -47,3 +54,4 @@ public class MessageService {
         }
     }
 }
+
