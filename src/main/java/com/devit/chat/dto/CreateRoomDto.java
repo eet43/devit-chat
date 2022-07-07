@@ -1,8 +1,16 @@
 package com.devit.chat.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
+@AllArgsConstructor
 public class CreateRoomDto {
-    private String name;
+    private UUID senderId;
+    private UUID receiverId;
+
+
 }
+

@@ -32,8 +32,15 @@ public class ChatRoomRepository {
                 .getSingleResult();
     }
 
+    public List<ChatRoom> findByUserUUID(UUID uuid1, UUID uuid2) {
+        return em.createQuery("select c from ChatRoom c where c.users = :uuid1 or c.users = :uuid2", ChatRoom.class)
+                .setParameter("uuid1", uuid1)
+                .setParameter("uuid2", uuid2)
+                .getResultList();
+    }
+
     public List<ChatRoom> findAllRooms(){
-        List<ChatRoom> result = em.createQuery("select c from ChatRoom c order by c.modifiedAt DESC")
+        List<ChatRoom> result = em.createQuery("select c from ChatRoom c order by c.modifiedAt DESC", ChatRoom.class)
                 .getResultList();
         //채팅방 수정 순서 최근 순으로 반환
 

@@ -32,13 +32,13 @@ public class ChatRoomController {
         return mv;
     }
 
-    //채팅방 개설
+    //채팅방 개설 (RedirectAttributes rttr)
     @PostMapping(value = "/api/chat/room")
-    public String create(@RequestBody CreateRoomDto createRoomDto, RedirectAttributes rttr){
+    public String create(@RequestBody CreateRoomDto createRoomDto){
 
-        log.info("# Create Chat Room , name: " + createRoomDto.getName());
+        log.info("# Create Chat Room ");
         UUID chatRoomId = chatRoomService.save(createRoomDto);
-        rttr.addFlashAttribute("roomId", chatRoomId);
+//        rttr.addFlashAttribute("roomId", chatRoomId);
         return "redirect:api/chat/rooms";
     }
 
