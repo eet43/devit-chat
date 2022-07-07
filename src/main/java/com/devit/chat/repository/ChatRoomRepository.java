@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -27,6 +30,14 @@ public class ChatRoomRepository {
         return em.createQuery("select c from ChatRoom c where c.name = :name", ChatRoom.class)
                 .setParameter("name", name)
                 .getSingleResult();
+    }
+
+    public List<ChatRoom> findAllRooms(){
+        List<ChatRoom> result = em.createQuery("select c from ChatRoom c order by c.modifiedAt DESC")
+                .getResultList();
+        //채팅방 수정 순서 최근 순으로 반환
+
+        return result;
     }
 
 
