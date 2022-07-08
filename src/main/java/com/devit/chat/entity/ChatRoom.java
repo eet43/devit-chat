@@ -23,17 +23,19 @@ public class ChatRoom extends Timestamped {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 
-    @Column(name = "user_id")
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<UUID> users = new ArrayList<>(); // 참가유저
+    //    @Column(name = "user_id")
+//    @ElementCollection(fetch = FetchType.LAZY)
+//    private List<UUID> users = new ArrayList<>(); // 참가유저
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<RoomMember> roomMembers = new ArrayList<>();
 
 
    /* 생성 메서드 */
-    public static ChatRoom createChatRoom(UUID senderID, UUID receiverID) {
+    public static ChatRoom createChatRoom() {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = UUID.randomUUID();
-        chatRoom.users.add(senderID);
-        chatRoom.users.add(receiverID);
+//        chatRoom.users.add(senderID);
+//        chatRoom.users.add(receiverID);
         return chatRoom;
     }
 }
