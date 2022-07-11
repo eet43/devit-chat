@@ -2,13 +2,13 @@ package com.devit.chat.entity;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Getter
-
+@Getter @Setter
 public class Message {
 
     @Id
@@ -16,11 +16,14 @@ public class Message {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatRoom_id")
+    @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @Column(unique = true)
-    private UUID writerId;
+    //    @Column(unique = true)
+//    private UUID writerId;
+    private String writerId;
+
+    private String name;
 
     private String message;
 }

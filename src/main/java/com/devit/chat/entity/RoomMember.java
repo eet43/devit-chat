@@ -14,10 +14,13 @@ public class RoomMember {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID userId;
+//    @Column(nullable = false, columnDefinition = "BINARY(16)")
+//    private UUID userId;
+
+    private String userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatRoom_id")
+    @JoinColumn(name = "chatRoom_id") //referenceCoulmnName = ""
     private ChatRoom chatRoom;
 
     public void addJoin(ChatRoom chatRoom) {
@@ -26,7 +29,7 @@ public class RoomMember {
     }
 
     /* 생성메서드 */
-    public static RoomMember createJoin(UUID userId, ChatRoom chatRoom) {
+    public static RoomMember createJoin(String userId, ChatRoom chatRoom) {
         RoomMember roomMember = new RoomMember();
         roomMember.userId = userId;
         roomMember.addJoin(chatRoom);

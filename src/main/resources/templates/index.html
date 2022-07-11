@@ -1,45 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
-    <title>{{room.name}}</title>
-    <script src="/webjars/jquery/dist/jquery.min.js"></script>
-    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
-    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <title>Websocket Chat</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- CSS -->
+    <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
 
-    <script>
-    $(function () {
-        var chatBox = $('.chat_box');
-        var messageInput = $('input[name="message"]');
-        var sendBtn = $('.send');
-        var roomId = $('.content').data('room-id');
-        var member = $('.content').data('member');
-
-        var sock = new SockJS("/stomp-chat");
-        var client = Stomp.over(sock);
-        client.connect({}, function () {
-            client.send('/publish/chat/join', {}, JSON.stringify({chatRoomId: roomId, writer: member}));
-            client.subscribe('/subscribe/chat/room/' + roomId, function (chat) {
-                var content = JSON.parse(chat.body);
-                chatBox.append('<li>' + content.message + '(' + content.writer + ')</li>')
-            });
-        });
-
-        sendBtn.click(function () {
-            var message = messageInput.val();
-            client.send('/publish/chat/message', {}, JSON.stringify({chatRoomId: roomId, message: message, writer: member}));
-            messageInput.val('');
-        });
-    });
-</script>
+    </style>
 </head>
 <body>
-<h1>{{room.name}}({{room.id}})</h1>
-<div class="content" data-room-id="{{room.id}}" data-member="{{member}}">
-    <ul class="chat_box">
+<div class="container" id="app" v-cloak>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>채팅방 리스트</h3>
+        </div>
+    </div>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <label class="input-group-text">방제목</label>
+        </div>
+        <input type="text" class="form-control" v-model="room_name" v-on:keyup.enter="createRoom">
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="button" @click="createRoom">채팅방 개설</button>
+        </div>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.roomId"
+            v-on:click="enterRoom(item.roomId)">
+            {{item.roomName}}
+        </li>
     </ul>
-    <input name="message">
-    <button class="send">보내기</button>
 </div>
+<!-- JavaScript -->
+<script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
+<script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            room_name : '',
+            chatrooms: [
+            ]
+        },
+        created() {
+
+            this.findAllRoom();
+        },
+        methods: {
+            findAllRoom: function() {
+                axios.get('/rooms').then(response => { this.chatrooms = response.data; });
+            },
+            createRoom: function() {
+                if("" === this.room_name) {
+                    alert("방 제목을 입력해 주십시요.");
+                    return;
+                } else {
+                    axios.post('/room', {
+                            senderId: "3dddd30c-de3d-4e57-9e15-57192581f426",
+                            receiverId: "a53x1f3d-813f-40fe-93c1-75ec1ea26711"
+                            })
+                        .then(
+                            response => {
+                                alert(response.data.roomName+"방 개설에 성공하였습니다.")
+                                this.room_name = '';
+                                this.findAllRoom();
+                            }
+                        )
+                        .catch( response => { alert("채팅방 개설에 실패하였습니다."); } );
+                }
+            },
+            enterRoom: function(roomId) {
+                let sender = "3dddd30c-de3d-4e57-9e15-57192581f426"
+                if(sender !== "") {
+                    localStorage.setItem('wschat.sender',sender);
+                    localStorage.setItem('wschat.roomId',roomId);
+                    location.href= "/detail?sender=" + sender + "&roomId=" + roomId;
+                }
+            }
+        }
+    });
+
+</script>
 </body>
 </html>

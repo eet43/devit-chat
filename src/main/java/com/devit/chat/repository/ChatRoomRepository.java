@@ -15,24 +15,19 @@ import java.util.UUID;
 public class ChatRoomRepository {
     private final EntityManager em;
 
-    public UUID save(ChatRoom chatRoom) {
+    public ChatRoom save(ChatRoom chatRoom) {
         em.persist(chatRoom);
-        return chatRoom.getRoomId();
+        return chatRoom;
     }
 
-    public ChatRoom findByUUID(UUID uuid) {
+    public ChatRoom findByUUID(String uuid) {
         return em.createQuery("select c from ChatRoom c where c.roomId = :uuid", ChatRoom.class)
                 .setParameter("uuid", uuid)
                 .getSingleResult();
     }
 
-    public ChatRoom findByName(String name) {
-        return em.createQuery("select c from ChatRoom c where c.name = :name", ChatRoom.class)
-                .setParameter("name", name)
-                .getSingleResult();
-    }
 
-    public List<ChatRoom> findByUserUUID(UUID uuid1, UUID uuid2) {
+    public List<ChatRoom> findByUserUUID(String uuid1, String uuid2) {
         return em.createQuery("select c from ChatRoom c where c.users = :uuid1 or c.users = :uuid2", ChatRoom.class)
                 .setParameter("uuid1", uuid1)
                 .setParameter("uuid2", uuid2)

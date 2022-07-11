@@ -3,6 +3,7 @@ package com.devit.chat.service;
 import com.devit.chat.dto.CreateRoomDto;
 import com.devit.chat.entity.ChatRoom;
 import com.devit.chat.repository.ChatRoomRepository;
+import com.devit.chat.repository.RoomMemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 class ChatRoomServiceTest {
 
     @PersistenceContext
@@ -26,37 +28,36 @@ class ChatRoomServiceTest {
     ChatRoomService chatRoomService;
 
     @Autowired
+    RoomMemberRepository roomMemberRepository;
+
+    @Autowired
     ChatRoomRepository chatRoomRepository;
 
     @Test
-    @Rollback(value = false)
-    @Transactional
     public void 채팅방_생성() throws Exception {
         //given
         CreateRoomDto createRoomDto = new CreateRoomDto(UUID.randomUUID(), UUID.randomUUID());
         System.out.println(createRoomDto);
 
         //when
-        ChatRoom chatRoom = ChatRoom.createChatRoom(createRoomDto.getSenderId(), createRoomDto.getReceiverId());
-        System.out.println(chatRoom);
-        UUID uuid = chatRoomRepository.save(chatRoom);
+        UUID roomID = chatRoomService.save(createRoomDto);
+
         //then
-        assertEquals(chatRoom, chatRoomRepository.findByUUID(uuid));
+        System.out.println(chatRoomRepository.findByUUID(roomID));
 
     }
 
     @Test
-    @Rollback(value = false)
-    @Transactional
     public void 채팅방_체크_이미_존재() throws Exception {
         //given
         CreateRoomDto createRoomDto = new CreateRoomDto(UUID.randomUUID(), UUID.randomUUID());
-        ChatRoom chatRoom = ChatRoom.createChatRoom(createRoomDto.getSenderId(), createRoomDto.getReceiverId());
-        UUID uuid = chatRoomRepository.save(chatRoom);
+        System.out.println(createRoomDto);
 
         //when
-
+        UUID roomID1 = chatRoomService.save(createRoomDto);
+        UUID roomID2 = chatRoomService.save(createRoomDto);
 
         //then
+        assertEquals(roomID1, roomID2);
     }
 }

@@ -9,6 +9,9 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Optional 로 통한,Null 예외 처리 필요함
+ */
 @Repository
 @RequiredArgsConstructor
 public class RoomMemberRepository {
@@ -19,8 +22,8 @@ public class RoomMemberRepository {
         return roomMember.getId();
     }
 
-    public List<RoomMember> findByUserId(UUID userId1, UUID userId2) {
-        return em.createQuery("select rm from RoomMember rm where rm.userId = :userId1 or where rm.userId = :userId2", RoomMember.class)
+    public List<RoomMember> findByUserId(String userId1, String userId2) {
+        return em.createQuery("select rm from RoomMember rm where rm.userId = :userId1 or rm.userId = :userId2", RoomMember.class)
                 .setParameter("userId1", userId1)
                 .setParameter("userId2", userId2)
                 .getResultList();

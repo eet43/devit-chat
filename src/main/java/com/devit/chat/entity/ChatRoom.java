@@ -1,6 +1,7 @@
 package com.devit.chat.entity;
 
 import com.devit.chat.util.Timestamped;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,25 +18,26 @@ public class ChatRoom extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)", name = "chatRoom_id")
-    private UUID roomId;
+    //    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)", name = "chat_room_id")
+//    private UUID roomId;
 
+    private String roomName;
+    private String roomId;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 
-    //    @Column(name = "user_id")
-//    @ElementCollection(fetch = FetchType.LAZY)
-//    private List<UUID> users = new ArrayList<>(); // 참가유저
+    @JsonIgnore
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<RoomMember> roomMembers = new ArrayList<>();
 
 
    /* 생성 메서드 */
-    public static ChatRoom createChatRoom() {
+    public static ChatRoom createChatRoom(String roomName) {
         ChatRoom chatRoom = new ChatRoom();
-        chatRoom.roomId = UUID.randomUUID();
-//        chatRoom.users.add(senderID);
-//        chatRoom.users.add(receiverID);
+        chatRoom.roomId = UUID.randomUUID().toString();
+        chatRoom.roomName = roomName;
         return chatRoom;
     }
 }

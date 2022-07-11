@@ -8,8 +8,7 @@ import org.springframework.web.socket.config.annotation.*;
 
 @Slf4j
 @Configuration
-@RequiredArgsConstructor
-@EnableWebSocket
+@EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
