@@ -19,8 +19,6 @@ public class Message {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    //    @Column(unique = true)
-//    private UUID writerId;
     private String writerId;
 
     private String name;
