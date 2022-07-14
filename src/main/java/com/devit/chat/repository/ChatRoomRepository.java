@@ -17,10 +17,12 @@ public class ChatRoomRepository {
         return chatRoom;
     }
 
-    public ChatRoom findByUUID(UUID uuid) {
-        return em.createQuery("select c from ChatRoom c where c.roomId = :uuid", ChatRoom.class)
+    public Optional<ChatRoom> findByUUID(UUID uuid) {
+        ChatRoom findRoom = em.createQuery("select c from ChatRoom c where c.roomId = :uuid", ChatRoom.class)
                 .setParameter("uuid", uuid)
                 .getSingleResult();
+
+        return Optional.ofNullable(findRoom);
     }
 
 
@@ -34,14 +36,14 @@ public class ChatRoomRepository {
         return list.stream().findAny();
     }
 
-    public List<ChatRoom> findAllRooms(UUID userId){
+    public Optional<List<ChatRoom>> findAllRooms(UUID userId){
         List<ChatRoom> result = em.createQuery("select c.roomId, c.roomName from ChatRoom c " +
                         "where c.senderId = :userId or c.receiverId = :userId", ChatRoom.class)
                 .setParameter("userId", userId)
                 .getResultList();
         //채팅방 수정 순서 최근 순으로 반환
 
-        return result;
+        return Optional.ofNullable(result);
     }
 
 

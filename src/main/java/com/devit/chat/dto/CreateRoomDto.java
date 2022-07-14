@@ -7,7 +7,6 @@ import java.util.UUID;
 
 @Data
 public class CreateRoomDto {
-    private UUID senderId;
     private UUID receiverId;
     private String roomName;
 

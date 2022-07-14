@@ -13,6 +13,12 @@ import java.rmi.server.UID;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 1. 채팅방 생성
+ * 2. 채팅방 입장
+ * 3. 채팅방 존재하는지 검사
+ * 4. 채팅방 목록 반환
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -20,9 +26,9 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
-    public Optional<ChatRoom> createRoom(CreateRoomDto createRoomDto) {
+    public Optional<ChatRoom> createRoom(UUID uuid, CreateRoomDto createRoomDto) {
         log.info("{}", createRoomDto);
-        UUID senderId = createRoomDto.getSenderId();
+        UUID senderId = uuid;
         UUID receiverId = createRoomDto.getReceiverId();
 
         // 유저 2명의 ID 를 통해, 이미 존재하는지 아닌지 확인해야함. 존재하면 해당 채팅방 리턴.
@@ -39,19 +45,18 @@ public class ChatRoomService {
         }
     }
 
-    public ChatRoom enterRoom(EnterRoomDto enterRoomDto) {
+    public Optional<ChatRoom> enterRoom(EnterRoomDto enterRoomDto) {
         return chatRoomRepository.findByUUID(enterRoomDto.getRoomId());
     }
 
     private Optional<ChatRoom> check(UUID senderId, UUID receiverId) {
-        log.info("매개변수 : ", senderId);
 
         Optional<ChatRoom> findChatRoom = chatRoomRepository.findByUser(senderId, receiverId);
 
         return findChatRoom;
     }
 
-    public List<ChatRoom> findAllRoom(UUID userId) {
+    public Optional<List<ChatRoom>> findAllRoom(UUID userId) {
         return chatRoomRepository.findAllRooms(userId);
     }
 

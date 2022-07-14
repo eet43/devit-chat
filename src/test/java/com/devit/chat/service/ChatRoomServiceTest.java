@@ -64,7 +64,6 @@ class ChatRoomServiceTest {
 //    }
 
     @Test
-    @Rollback(value = false)
     public void 채팅방_생성() throws Exception {
         //given
         UUID senderId = UUID.randomUUID();
@@ -72,13 +71,12 @@ class ChatRoomServiceTest {
         String roomName = "김대희";
 
         CreateRoomDto createRoomDto = new CreateRoomDto();
-        createRoomDto.setSenderId(senderId);
         createRoomDto.setReceiverId(receiverId);
         createRoomDto.setRoomName(roomName);
 
         //when
-        Optional<ChatRoom> chatRoom1 = chatRoomService.createRoom(createRoomDto);
-        Optional<ChatRoom> chatRoom2 = chatRoomService.createRoom(createRoomDto);
+        Optional<ChatRoom> chatRoom1 = chatRoomService.createRoom(senderId, createRoomDto);
+        Optional<ChatRoom> chatRoom2 = chatRoomService.createRoom(senderId, createRoomDto);
 
         //then
         assertThat(chatRoom1, is(chatRoom2));
