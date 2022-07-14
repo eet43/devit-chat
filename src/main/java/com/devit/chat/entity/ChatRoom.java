@@ -18,25 +18,26 @@ public class ChatRoom extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)", name = "chat_room_id")
-//    private UUID roomId;
-
+    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    private UUID roomId;
     private String roomName;
-    private String roomId;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private List<RoomMember> roomMembers = new ArrayList<>();
+    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    private UUID senderId;
+
+    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    private UUID receiverId;
 
 
    /* 생성 메서드 */
-    public static ChatRoom createChatRoom(String roomName) {
+    public static ChatRoom createChatRoom(String roomName, UUID senderId, UUID receiverId) {
         ChatRoom chatRoom = new ChatRoom();
-        chatRoom.roomId = UUID.randomUUID().toString();
+        chatRoom.roomId = UUID.randomUUID();
+        chatRoom.senderId = senderId;
+        chatRoom.receiverId = receiverId;
         chatRoom.roomName = roomName;
         return chatRoom;
     }
