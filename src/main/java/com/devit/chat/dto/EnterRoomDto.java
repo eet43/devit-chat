@@ -6,9 +6,9 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class CreateRoomDto {
-    private UUID receiverId;
-    private String roomName;
+@AllArgsConstructor
+public class EnterRoomDto {
+    private UUID roomId;
 
 }
 

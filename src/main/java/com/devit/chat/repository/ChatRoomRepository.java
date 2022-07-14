@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,27 +17,36 @@ public class ChatRoomRepository {
         return chatRoom;
     }
 
-    public ChatRoom findByUUID(String uuid) {
-        return em.createQuery("select c from ChatRoom c where c.roomId = :uuid", ChatRoom.class)
+    public Optional<ChatRoom> findByUUID(UUID uuid) {
+        ChatRoom findRoom = em.createQuery("select c from ChatRoom c where c.roomId = :uuid", ChatRoom.class)
                 .setParameter("uuid", uuid)
                 .getSingleResult();
+
+        return Optional.ofNullable(findRoom);
     }
 
 
-    public List<ChatRoom> findByUserUUID(String uuid1, String uuid2) {
-        return em.createQuery("select c from ChatRoom c where c.users = :uuid1 or c.users = :uuid2", ChatRoom.class)
-                .setParameter("uuid1", uuid1)
-                .setParameter("uuid2", uuid2)
+    public Optional<ChatRoom> findByUser(UUID senderId, UUID receiverId) {
+        List<ChatRoom> list = em.createQuery("select c from ChatRoom c where (c.senderId = :senderId and c.receiverId = :receiverId) " +
+                        "or (c.receiverId = :senderId and c.senderId = :receiverId)", ChatRoom.class)
+                .setParameter("senderId", senderId)
+                .setParameter("receiverId", receiverId)
                 .getResultList();
+
+        return list.stream().findAny();
     }
 
-    public List<ChatRoom> findAllRooms(){
-        List<ChatRoom> result = em.createQuery("select c from ChatRoom c order by c.modifiedAt DESC", ChatRoom.class)
+    public Optional<List<ChatRoom>> findAllRooms(UUID userId){
+        List<ChatRoom> result = em.createQuery("select c.roomId, c.roomName from ChatRoom c " +
+                        "where c.senderId = :userId or c.receiverId = :userId", ChatRoom.class)
+                .setParameter("userId", userId)
                 .getResultList();
         //채팅방 수정 순서 최근 순으로 반환
 
-        return result;
+        return Optional.ofNullable(result);
     }
+
+
 
 
 }
