@@ -22,7 +22,8 @@ public class ChatRoom extends Timestamped {
     private UUID roomId;
     private String roomName;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "room_id")
     private List<Message> messages = new ArrayList<>();
 
     @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")

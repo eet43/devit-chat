@@ -70,9 +70,7 @@ class ChatRoomServiceTest {
         UUID receiverId = UUID.randomUUID();
         String roomName = "김대희";
 
-        CreateRoomDto createRoomDto = new CreateRoomDto();
-        createRoomDto.setReceiverId(receiverId);
-        createRoomDto.setRoomName(roomName);
+        CreateRoomDto createRoomDto = new CreateRoomDto(receiverId, roomName);
 
         //when
         Optional<ChatRoom> chatRoom1 = chatRoomService.createRoom(senderId, createRoomDto);

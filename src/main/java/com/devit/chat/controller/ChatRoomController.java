@@ -2,6 +2,7 @@ package com.devit.chat.controller;
 
 import com.devit.chat.dto.CreateRoomDto;
 import com.devit.chat.dto.EnterRoomDto;
+import com.devit.chat.dto.SampleCreateDto;
 import com.devit.chat.dto.response.ResponseDetails;
 import com.devit.chat.entity.ChatRoom;
 import com.devit.chat.entity.Message;
@@ -35,8 +36,30 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
 
-    @PostMapping(value = "/rooms")
-    public ResponseEntity<?> create(@RequestHeader("Authorization") String data, @RequestBody CreateRoomDto createRoomDto) {
+//    @PostMapping(value = "/rooms") //이게 진짜임
+//    public ResponseEntity<?> create(@RequestHeader("Authorization") String data, @RequestBody CreateRoomDto createRoomDto) {
+//
+//        log.info("채팅방 생성 ");
+//
+//        String[] chunks = data.split("\\.");
+//        Base64.Decoder decoder = Base64.getDecoder();
+//        String payload = new String(decoder.decode(chunks[1]));
+//
+//        JSONObject jsonObject = new JSONObject(payload);
+//        String sample = jsonObject.getString("uuid");
+//        UUID uuid = UUID.fromString(sample);
+//
+//        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(uuid, createRoomDto);
+//
+//        int httpStatus = HttpStatusChangeInt.ChangeStatusCode("Created");
+//        String path = "/rooms";
+//
+//        ResponseDetails responseDetails = new ResponseDetails(new Date(), chatRoom, httpStatus, path);
+//        return new ResponseEntity<>(responseDetails, HttpStatus.CREATED);
+//    }
+
+    @PostMapping(value = "/rooms") //test 용
+    public ResponseEntity<?> create(@RequestHeader("Authorization") String data, @RequestBody SampleCreateDto sampleCreateRoomDto) {
 
         log.info("채팅방 생성 ");
 
@@ -46,9 +69,13 @@ public class ChatRoomController {
 
         JSONObject jsonObject = new JSONObject(payload);
         String sample = jsonObject.getString("uuid");
-        UUID uuid = UUID.fromString(sample);
+        UUID uuid1 = UUID.fromString(sample);
 
-        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(uuid, createRoomDto);
+        UUID uuid2 = UUID.fromString(sampleCreateRoomDto.getReceiverId());
+
+        CreateRoomDto createRoomDto = new CreateRoomDto(uuid2, sampleCreateRoomDto.getRoomName());
+
+        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(uuid1, createRoomDto);
 
         int httpStatus = HttpStatusChangeInt.ChangeStatusCode("Created");
         String path = "/rooms";

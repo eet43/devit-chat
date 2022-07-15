@@ -1,30 +1,38 @@
-//package com.devit.chat.controller;
-//
-//import com.devit.chat.entity.Message;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.messaging.handler.annotation.MessageMapping;
-//import org.springframework.messaging.simp.SimpMessageSendingOperations;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//@RestController
-//@Slf4j
-//@RequiredArgsConstructor
-//public class MessageController {
-//    private final SimpMessageSendingOperations sendingOperations;
-//
-//    @MessageMapping(value = "/enter")
-//    public void enter(Message message){
-//        log.info("입장시작", message);
-//        message.setMessage(message.getName() + "님이 채팅방에 참여하였습니다.");
-//        String address = message.getChatRoom().getRoomId();
-//        sendingOperations.convertAndSend("/sub/room/" + address, message);
-//    }
-//
-//
-//    @MessageMapping(value = "/message")
-//    public void message(Message message){
-//        log.info("메시지 시작");
-//        sendingOperations.convertAndSend("/sub/room/" + message.getChatRoom().getRoomId(), message);
-//    }
-//}
+package com.devit.chat.controller;
+
+import com.devit.chat.dto.SendMessageDto;
+import com.devit.chat.entity.Message;
+import com.devit.chat.service.MessageService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Base64;
+import java.util.UUID;
+
+@RestController
+@Slf4j
+@RequiredArgsConstructor
+public class MessageController {
+
+    private final MessageService messageService;
+
+    @MessageMapping(value = "/message")
+    public void message(@RequestHeader("Authorization") String data , @RequestBody SendMessageDto messageDto){
+
+        String[] chunks = data.split("\\.");
+        Base64.Decoder decoder = Base64.getDecoder();
+        String payload = new String(decoder.decode(chunks[1]));
+
+        JSONObject jsonObject = new JSONObject(payload);
+        String sample = jsonObject.getString("uuid");
+        UUID senderUuid = UUID.fromString(sample); //고쳐야함
+
+        messageService.sendMessage(senderUuid, messageDto);
+    }
+}
