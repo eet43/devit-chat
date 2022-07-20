@@ -22,9 +22,12 @@ public class ChatRoom extends Timestamped {
     private UUID roomId;
     private String roomName;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id")
     private List<Message> messages = new ArrayList<>();
+
+    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    private UUID boardId;
 
     @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
     private UUID senderId;
@@ -34,9 +37,10 @@ public class ChatRoom extends Timestamped {
 
 
    /* 생성 메서드 */
-    public static ChatRoom createChatRoom(String roomName, UUID senderId, UUID receiverId) {
+    public static ChatRoom createChatRoom(String roomName, UUID boardId, UUID senderId, UUID receiverId) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.roomId = UUID.randomUUID();
+        chatRoom.boardId = boardId;
         chatRoom.senderId = senderId;
         chatRoom.receiverId = receiverId;
         chatRoom.roomName = roomName;

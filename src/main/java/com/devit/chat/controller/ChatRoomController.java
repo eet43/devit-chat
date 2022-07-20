@@ -70,12 +70,12 @@ public class ChatRoomController {
         JSONObject jsonObject = new JSONObject(payload);
         String sample = jsonObject.getString("uuid");
         UUID uuid1 = UUID.fromString(sample);
-
+        UUID boardId = UUID.fromString(sampleCreateRoomDto.getBoardId());
         UUID uuid2 = UUID.fromString(sampleCreateRoomDto.getReceiverId());
 
-        CreateRoomDto createRoomDto = new CreateRoomDto(uuid2, sampleCreateRoomDto.getRoomName());
+        CreateRoomDto createRoomDto = new CreateRoomDto(boardId, uuid2, sampleCreateRoomDto.getRoomName());
 
-        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(uuid1, createRoomDto);
+        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(boardId, uuid1, createRoomDto);
 
         int httpStatus = HttpStatusChangeInt.ChangeStatusCode("Created");
         String path = "/rooms";
@@ -84,7 +84,7 @@ public class ChatRoomController {
         return new ResponseEntity<>(responseDetails, HttpStatus.CREATED);
     }
 
-    @PostMapping("/rooms/{roomId}")
+    @GetMapping("/rooms/{roomId}")
     public ResponseEntity<?> getRooms(@RequestHeader("Authorization") String data, @PathVariable("roomId") UUID roomId) {
 
         String[] chunks = data.split("\\.");
@@ -118,6 +118,7 @@ public class ChatRoomController {
         UUID uuid = UUID.fromString(sample);
 
         Optional<List<ChatRoom>> chatRooms = chatRoomService.findAllRoom(uuid);
+        log.info("채팅방 목록 : ", chatRooms);
 
         int httpStatus = HttpStatusChangeInt.ChangeStatusCode("OK");
         String path = "/rooms";

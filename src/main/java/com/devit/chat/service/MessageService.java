@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,9 +25,9 @@ public class MessageService {
 
 
     public String sendMessage(UUID senderId, SendMessageDto messageDto) {
-        UUID roomId = UUID.fromString(messageDto.getRoomId()); // 나중에 없애야함 테스트 용
-        Optional<ChatRoom> findRoom = chatRoomRepository.findByUUID(roomId);
-        Optional<Message> message = Message.createMessage(senderId,messageDto.getMessage());
+        ChatRoom chatRoom = messageDto.getRoom();
+        UUID roomId = chatRoom.getRoomId(); // 나중에 없애야함 테스트 용
+        Optional<Message> message = Message.createMessage(senderId,chatRoom, messageDto.getMessage());
 
 
         log.info("메시지 시작");
@@ -36,8 +37,12 @@ public class MessageService {
             return "메시지 전송 완료.";
 
         } catch (Exception e) {
-            return "메시지 전송 실패.";
+            return "메시지 전송 실패 : " + e.getMessage();
         }
 
     }
+
+//    public List<Message> loadMessage(UUID roomId) {
+//        return
+//    }
 }

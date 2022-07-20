@@ -37,7 +37,7 @@ public class ChatRoomRepository {
     }
 
     public Optional<List<ChatRoom>> findAllRooms(UUID userId){
-        List<ChatRoom> result = em.createQuery("select c.roomId, c.roomName from ChatRoom c " +
+        List<ChatRoom> result = em.createQuery("select c from ChatRoom c " +
                         "where c.senderId = :userId or c.receiverId = :userId", ChatRoom.class)
                 .setParameter("userId", userId)
                 .getResultList();

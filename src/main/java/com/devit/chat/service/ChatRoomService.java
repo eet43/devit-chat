@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
-    public Optional<ChatRoom> createRoom(UUID uuid, CreateRoomDto createRoomDto) {
+    public Optional<ChatRoom> createRoom(UUID boardId, UUID uuid, CreateRoomDto createRoomDto) {
         log.info("{}", createRoomDto);
         UUID senderId = uuid;
         UUID receiverId = createRoomDto.getReceiverId();
@@ -37,7 +37,7 @@ public class ChatRoomService {
 
         if (findRooms.isEmpty()) {
             //기존 방이 없으면 두 유저간의 새로운 채팅방 생성 (새로운 유저의 이직서)
-            ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(createRoomDto.getRoomName(), senderId, receiverId));
+            ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(createRoomDto.getRoomName(), createRoomDto.getBoardId(), senderId, receiverId));
             return Optional.ofNullable(chatRoom);
         } else {
             //기존 방이 있으면 기존 채팅방 생성 (기존 유저의 이직서)
