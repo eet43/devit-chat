@@ -13,13 +13,11 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -29,7 +27,16 @@ public class MessageController {
     private final MessageService messageService;
 
     @MessageMapping(value = "/message")
-    public void message(@RequestHeader("Authorization") String data , @RequestBody SendMessageDto messageDto){
+    public void message(SendMessageDto messageDto){
+
+
+        log.info("Message : {} 해당 메시지를 전달합니다.", messageDto);
+
+        messageService.sendMessage(messageDto);
+    }
+
+    @GetMapping("/messages/{roomId}")
+    public ResponseEntity<?> getRooms(@RequestHeader("Authorization") String data, @PathVariable("roomId") UUID roomId) {
 
         String[] chunks = data.split("\\.");
         Base64.Decoder decoder = Base64.getDecoder();
@@ -37,28 +44,16 @@ public class MessageController {
 
         JSONObject jsonObject = new JSONObject(payload);
         String sample = jsonObject.getString("uuid");
-        UUID senderUuid = UUID.fromString(sample); //고쳐야함
+        UUID uuid = UUID.fromString(sample);
 
-        messageService.sendMessage(senderUuid, messageDto);
+        Optional<List<Message>> messages = messageService.loadMessage(roomId);
+
+        log.info("Message : {} 채팅방에 속한 메시지를 반환합니다.", messages);
+
+        int httpStatus = HttpStatusChangeInt.ChangeStatusCode("OK");
+        String path = "/rooms";
+
+        ResponseDetails responseDetails = new ResponseDetails(new Date(), messages, httpStatus, path);
+        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
     }
-
-//    @GetMapping("/messages/{roomId}")
-//    public ResponseEntity<?> getRooms(@RequestHeader("Authorization") String data, @PathVariable("roomId") UUID roomId) {
-//
-//        String[] chunks = data.split("\\.");
-//        Base64.Decoder decoder = Base64.getDecoder();
-//        String payload = new String(decoder.decode(chunks[1]));
-//
-//        JSONObject jsonObject = new JSONObject(payload);
-//        String sample = jsonObject.getString("uuid");
-//        UUID uuid = UUID.fromString(sample);
-//
-//        Optional<ChatRoom> chatRoom = chatRoomService.enterRoom(new EnterRoomDto(roomId));
-//
-//        int httpStatus = HttpStatusChangeInt.ChangeStatusCode("OK");
-//        String path = "/rooms";
-//
-//        ResponseDetails responseDetails = new ResponseDetails(new Date(), chatRoom, httpStatus, path);
-//        return new ResponseEntity<>(responseDetails, HttpStatus.OK);
-//    }
 }

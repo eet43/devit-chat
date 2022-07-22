@@ -18,32 +18,36 @@ public class ChatRoom extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    @Column(name="room_uuid", unique = true, columnDefinition = "BINARY(16)")
     private UUID roomId;
-    private String roomName;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "room_id")
+    private String senderName;
+
+    private String receiverName;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chat_room_id")
     private List<Message> messages = new ArrayList<>();
 
-    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID boardId;
 
-    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID senderId;
 
-    @Column(nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
     private UUID receiverId;
 
 
    /* 생성 메서드 */
-    public static ChatRoom createChatRoom(String roomName, UUID boardId, UUID senderId, UUID receiverId) {
+    public static ChatRoom createChatRoom(String senderName, String receiverName, UUID boardId, UUID senderId, UUID receiverId) {
         ChatRoom chatRoom = new ChatRoom();
+        chatRoom.senderName = senderName;
+        chatRoom.receiverName = receiverName;
         chatRoom.roomId = UUID.randomUUID();
         chatRoom.boardId = boardId;
         chatRoom.senderId = senderId;
         chatRoom.receiverId = receiverId;
-        chatRoom.roomName = roomName;
         return chatRoom;
     }
 }

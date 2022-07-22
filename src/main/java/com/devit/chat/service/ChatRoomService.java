@@ -26,26 +26,34 @@ import java.util.stream.Collectors;
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
-    public Optional<ChatRoom> createRoom(UUID boardId, UUID uuid, CreateRoomDto createRoomDto) {
-        log.info("{}", createRoomDto);
+    public Optional<ChatRoom> createRoom(UUID uuid, CreateRoomDto createRoomDto) {
         UUID senderId = uuid;
         UUID receiverId = createRoomDto.getReceiverId();
 
         // 유저 2명의 ID 를 통해, 이미 존재하는지 아닌지 확인해야함. 존재하면 해당 채팅방 리턴.
 
+        log.info("ChatRoom(serivce) : 이미 존재하는 채팅방인지 확인합니다.");
+
         Optional<ChatRoom> findRooms = check(senderId, receiverId);
 
         if (findRooms.isEmpty()) {
             //기존 방이 없으면 두 유저간의 새로운 채팅방 생성 (새로운 유저의 이직서)
-            ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(createRoomDto.getRoomName(), createRoomDto.getBoardId(), senderId, receiverId));
+            ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom(createRoomDto.getSenderName(), createRoomDto.getReceiverName(),
+                    createRoomDto.getBoardId(), senderId, receiverId));
+            log.info("ChatRoom(serivce) : {} 새로운 채팅방을 반환합니다.", chatRoom);
+
             return Optional.ofNullable(chatRoom);
         } else {
             //기존 방이 있으면 기존 채팅방 생성 (기존 유저의 이직서)
+            log.info("ChatRoom(serivce) : {} 기존 채팅방을 반환합니다.", findRooms);
             return findRooms;
         }
     }
 
     public Optional<ChatRoom> enterRoom(EnterRoomDto enterRoomDto) {
+
+        log.info("ChatRoom(service) : {} 채팅방에 입장합니다.", enterRoomDto);
+
         return chatRoomRepository.findByUUID(enterRoomDto.getRoomId());
     }
 
@@ -57,7 +65,12 @@ public class ChatRoomService {
     }
 
     public Optional<List<ChatRoom>> findAllRoom(UUID userId) {
-        return chatRoomRepository.findAllRooms(userId);
+
+        Optional<List<ChatRoom>> findRoom = chatRoomRepository.findAllRooms(userId);
+
+        log.info("ChatRoom(service) : {} 모든 채팅방을 반환합니다..", findRoom);
+
+        return findRoom;
     }
 
 }

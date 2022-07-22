@@ -15,6 +15,8 @@ public class CreateRoomDto {
     @Column(columnDefinition = "BINARY(16)")
     private UUID receiverId;
 
-    private String roomName;
+    private String senderName;
+    private String receiverName;
+
 }
 

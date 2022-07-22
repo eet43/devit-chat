@@ -1,13 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/devit_chat?characterEncoding=utf8
-    username: devit
-    password: 1234
-
-  redis:
-    host: 127.0.0.1
-    port: 6379
+    url: jdbc:mysql://database-devit-chat.copkmnpqtze8.ap-northeast-2.rds.amazonaws.com:3306/devit_chat?characterEncoding=utf8
+    username: daehee
+    password: 12345678
 
   jpa:
     hibernate:

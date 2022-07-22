@@ -4,6 +4,7 @@ import com.devit.chat.dto.SendMessageDto;
 import com.devit.chat.entity.ChatRoom;
 import com.devit.chat.entity.Message;
 import com.devit.chat.repository.ChatRoomRepository;
+import com.devit.chat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -21,19 +22,20 @@ import java.util.UUID;
 public class MessageService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final MessageRepository messageRepository;
     private final SimpMessageSendingOperations sendingOperations;
 
 
-    public String sendMessage(UUID senderId, SendMessageDto messageDto) {
-        ChatRoom chatRoom = messageDto.getRoom();
-        UUID roomId = chatRoom.getRoomId(); // 나중에 없애야함 테스트 용
-        Optional<Message> message = Message.createMessage(senderId,chatRoom, messageDto.getMessage());
+    public String sendMessage(SendMessageDto messageDto) {
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findByUUID(messageDto.getRoomId());
 
+        Optional<Message> message = Message.createMessage(messageDto.getUserId(), messageDto.getSenderName(), chatRoom.get(), messageDto.getMessage());
+        messageRepository.save(message.get());
 
         log.info("메시지 시작");
 
         try {
-            sendingOperations.convertAndSend("/sub/rooms/" + roomId, message);
+            sendingOperations.convertAndSend("/sub/rooms/" + messageDto.getRoomId(), message);
             return "메시지 전송 완료.";
 
         } catch (Exception e) {
@@ -42,7 +44,9 @@ public class MessageService {
 
     }
 
-//    public List<Message> loadMessage(UUID roomId) {
-//        return
-//    }
+    public Optional<List<Message>> loadMessage(UUID roomId) {
+
+//        return chatRoomRepository.findMessageByUUID(roomId);
+        return messageRepository.loadMessages(roomId);
+    }
 }

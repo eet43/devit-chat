@@ -9,6 +9,8 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class SendMessageDto {
-    private ChatRoom room;
+    private UUID userId;
+    private String senderName;
+    private UUID roomId;
     private String message;
 }

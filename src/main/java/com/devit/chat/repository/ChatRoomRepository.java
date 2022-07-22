@@ -1,6 +1,7 @@
 package com.devit.chat.repository;
 
 import com.devit.chat.entity.ChatRoom;
+import com.devit.chat.entity.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -44,6 +45,16 @@ public class ChatRoomRepository {
         //채팅방 수정 순서 최근 순으로 반환
 
         return Optional.ofNullable(result);
+    }
+
+    public Optional<List<Message>> findMessageByUUID(UUID chatId) {
+        List<Message> messages = em.createQuery("select c.message from ChatRoom c where c.roomId = :uuid order by m.createdAt", Message.class)
+                .setFirstResult(1)
+                .setMaxResults(10)
+                .setParameter("uuid", chatId)
+                .getResultList();
+
+        return Optional.ofNullable(messages);
     }
 
 

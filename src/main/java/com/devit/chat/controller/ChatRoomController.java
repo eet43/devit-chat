@@ -2,24 +2,17 @@ package com.devit.chat.controller;
 
 import com.devit.chat.dto.CreateRoomDto;
 import com.devit.chat.dto.EnterRoomDto;
-import com.devit.chat.dto.SampleCreateDto;
 import com.devit.chat.dto.response.ResponseDetails;
 import com.devit.chat.entity.ChatRoom;
-import com.devit.chat.entity.Message;
-import com.devit.chat.exception.NoResourceException;
-import com.devit.chat.repository.ChatRoomRepository;
 import com.devit.chat.service.ChatRoomService;
 import com.devit.chat.util.HttpStatusChangeInt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 
@@ -31,37 +24,14 @@ import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
-@Log4j2
+@Slf4j
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
 
-//    @PostMapping(value = "/rooms") //이게 진짜임
-//    public ResponseEntity<?> create(@RequestHeader("Authorization") String data, @RequestBody CreateRoomDto createRoomDto) {
-//
-//        log.info("채팅방 생성 ");
-//
-//        String[] chunks = data.split("\\.");
-//        Base64.Decoder decoder = Base64.getDecoder();
-//        String payload = new String(decoder.decode(chunks[1]));
-//
-//        JSONObject jsonObject = new JSONObject(payload);
-//        String sample = jsonObject.getString("uuid");
-//        UUID uuid = UUID.fromString(sample);
-//
-//        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(uuid, createRoomDto);
-//
-//        int httpStatus = HttpStatusChangeInt.ChangeStatusCode("Created");
-//        String path = "/rooms";
-//
-//        ResponseDetails responseDetails = new ResponseDetails(new Date(), chatRoom, httpStatus, path);
-//        return new ResponseEntity<>(responseDetails, HttpStatus.CREATED);
-//    }
+    @PostMapping(value = "/rooms") //이게 진짜임
+    public ResponseEntity<?> create(@RequestHeader("Authorization") String data, @RequestBody CreateRoomDto createRoomDto) {
 
-    @PostMapping(value = "/rooms") //test 용
-    public ResponseEntity<?> create(@RequestHeader("Authorization") String data, @RequestBody SampleCreateDto sampleCreateRoomDto) {
-
-        log.info("채팅방 생성 ");
 
         String[] chunks = data.split("\\.");
         Base64.Decoder decoder = Base64.getDecoder();
@@ -69,13 +39,13 @@ public class ChatRoomController {
 
         JSONObject jsonObject = new JSONObject(payload);
         String sample = jsonObject.getString("uuid");
-        UUID uuid1 = UUID.fromString(sample);
-        UUID boardId = UUID.fromString(sampleCreateRoomDto.getBoardId());
-        UUID uuid2 = UUID.fromString(sampleCreateRoomDto.getReceiverId());
+        UUID uuid = UUID.fromString(sample);
 
-        CreateRoomDto createRoomDto = new CreateRoomDto(boardId, uuid2, sampleCreateRoomDto.getRoomName());
+        log.info("ChatRoom : {} 해당 유저들의 채팅방을 생성합니다.", createRoomDto);
 
-        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(boardId, uuid1, createRoomDto);
+        Optional<ChatRoom> chatRoom = chatRoomService.createRoom(uuid, createRoomDto);
+
+        log.info("ChatRoom : {} 해당 유저들의 채팅방을 생성 완료 후 반환합니다..", chatRoom);
 
         int httpStatus = HttpStatusChangeInt.ChangeStatusCode("Created");
         String path = "/rooms";
@@ -97,6 +67,9 @@ public class ChatRoomController {
 
         Optional<ChatRoom> chatRoom = chatRoomService.enterRoom(new EnterRoomDto(roomId));
 
+        log.info("ChatRoom : {} 해당 채팅방을 입장합니다.", chatRoom);
+
+
         int httpStatus = HttpStatusChangeInt.ChangeStatusCode("OK");
         String path = "/rooms";
 
@@ -117,8 +90,9 @@ public class ChatRoomController {
         String sample = jsonObject.getString("uuid");
         UUID uuid = UUID.fromString(sample);
 
+
         Optional<List<ChatRoom>> chatRooms = chatRoomService.findAllRoom(uuid);
-        log.info("채팅방 목록 : ", chatRooms);
+        log.info("ChatRoomList : {} 채팅방의 목록을 반환합니다.", chatRooms);
 
         int httpStatus = HttpStatusChangeInt.ChangeStatusCode("OK");
         String path = "/rooms";

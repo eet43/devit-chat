@@ -1,10 +1,12 @@
 package com.devit.chat.entity;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,11 +20,18 @@ public class Message {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
+    @JsonIgnore
     private ChatRoom chatRoom;
 
-    private UUID writerId;
+    private String senderName;
+
+    @Column(nullable = false, columnDefinition = "BINARY(16)")
+    private UUID senderId;
+
 
     private String message;
+
+    private LocalDateTime createdAt;
 
 
     /* 연관관계 편의 메소드 */
@@ -34,11 +43,13 @@ public class Message {
 
     /* 생성 메서스 */
 
-    public static Optional<Message> createMessage(UUID writerId, ChatRoom chatRoom, String message) {
+    public static Optional<Message> createMessage(UUID senderId, String senderName, ChatRoom chatRoom, String message) {
         Message sampleMessage = new Message();
-        sampleMessage.writerId = writerId;
+        sampleMessage.senderName = senderName;
+        sampleMessage.senderId = senderId;
         sampleMessage.addMessage(chatRoom);
         sampleMessage.message = message;
+        sampleMessage.setCreatedAt(LocalDateTime.now());
 
         return Optional.ofNullable(sampleMessage);
     }
