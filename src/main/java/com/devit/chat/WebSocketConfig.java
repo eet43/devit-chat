@@ -12,7 +12,7 @@ import org.springframework.web.socket.config.annotation.*;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-chat")
+        registry.addEndpoint("/api/chats/ws/chat")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }

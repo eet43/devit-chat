@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://database-devit-chat.copkmnpqtze8.ap-northeast-2.rds.amazonaws.com:3306/devit_chat?characterEncoding=utf8
@@ -14,13 +16,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  data:
-    web:
-      pageable:
-        default-page-size: 10
-        one-indexed-parameters: true
-  profiles:
-    include: API-KEY
+
+  application:
+    name: chat-service
 
   devtools:
     livereload:
@@ -29,6 +27,13 @@ spring:
       enabled: false
     freemarker:
       cache: false
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://54.180.93.206:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    prefer-ip-address: true
